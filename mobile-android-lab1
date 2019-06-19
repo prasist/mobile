@@ -1,0 +1,104 @@
+/*cs*/
+using Android.App;
+using Android.OS;
+using Android.Support.V7.App;
+using Android.Runtime;
+using Android.Widget;
+using System.Collections.Generic;
+
+namespace TimesTable
+{
+    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
+    public class MainActivity : AppCompatActivity
+    {
+        ListView numList;
+        EditText numEditText;
+        SeekBar mSeeker;
+
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
+            // Set our view from the "main" layout resource
+            SetContentView(Resource.Layout.activity_main);
+
+            mSeeker = FindViewById<SeekBar>(Resource.Id.seekBar1);
+            mSeeker.ProgressChanged += MSeeker_ProgressChanged;
+
+           
+            numList = FindViewById<ListView>(Resource.Id.numberListView);
+            numEditText = FindViewById<EditText>(Resource.Id.numberText);
+            Button insertButton = FindViewById<Button>(Resource.Id.insertbutton);
+
+            insertButton.Click += delegate {
+                calculate();
+            };
+        }
+
+
+        private void calculate(int user_number=0)
+        {
+            List<int> numbers = new List<int>();
+            numbers.Clear();
+
+            if (user_number==0)
+            {
+                if (!string.IsNullOrEmpty(numEditText.Text))
+                    user_number = System.Convert.ToInt32(numEditText.Text);
+                else
+                    user_number = 1;
+            } 
+                                       
+            for (int i = 1; i <= 10; i++)
+            {
+               numbers.Add(user_number * i);
+            }
+            numList.Adapter = new ArrayAdapter<int>(this, Android.Resource.Layout.SimpleListItem1, numbers);
+            
+        }
+
+        private void MSeeker_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e)
+        {
+            Toast.MakeText(this, $"you are in {mSeeker.Progress}", ToastLength.Long).Show();
+            numEditText = FindViewById<EditText>(Resource.Id.numberText);
+            numEditText.Text = mSeeker.Progress.ToString();
+            calculate(mSeeker.Progress);
+        }
+    }
+
+
+}
+
+/*axml*/
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:id="@+id/numberText"
+                android:inputType="number" />
+        <Button
+                android:text="insert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/insertbutton" />
+
+                </LinearLayout>
+	<SeekBar
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/seekBar1"
+		android:min="1" android:max="10"/>
+        <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/numberListView" />
+</LinearLayout>
